@@ -39,6 +39,12 @@ class Mes_Gateway_Block_Form extends Mage_Payment_Block_Form_Cc
 	
 	protected function _prepareLayout()
 	{
+		/*
+		// Will not always load JS on onepagecheckout... Inlining the JS in the template for now.
+		$blocks = $this->getLayout()->getAllBlocks();
+		if(isset($blocks['head']) && $blocks['head'] != null)
+			$blocks['head']->addJs('mes/mes-1.0-min.js');
+		*/
 		return parent::_prepareLayout();
 	}
 }

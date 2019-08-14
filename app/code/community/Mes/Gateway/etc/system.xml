@@ -148,6 +148,17 @@
                             <show_in_store>0</show_in_store>
                         </proxy_url>
 						
+                        <use_tokenization translate="label">
+                            <label>Tokenize Card Before Authorization</label>
+                            <comment><![CDATA[Reduces PCI requirements by having the cardholder's browser tokenize the card before it is sent to the shopping cart.<br /><b><ul><li>Your domain must be registered with Merchant e-Solutions prior to enabling this function.</li><li>Checkout must additionally have SSL enabled.</li></ul></b><br /><a href="http://resources.merchante-solutions.com/display/TPGPUB/Transparent+Redirect+Tokenization" target="_T">Read more about Transparent Redirect Tokenization here.</a>]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>105</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_tokenization>
+						
                         <order_status translate="label">
                             <label>New order status</label>
                             <frontend_type>select</frontend_type>

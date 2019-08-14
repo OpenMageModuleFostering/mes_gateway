@@ -44,6 +44,21 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 	public function __construct() {
 	}
 
+    /**
+     * During validation, allow any valid card or a truncated card number.
+     * @return  bool
+     */
+    public function validate() {
+		$errorMsg = false;
+		$info = $this->getInfoInstance();
+        $ccNumber = $info->getCcNumber();
+		
+		if(preg_match("/^\*{11,12}\d{4}/", "", $ccNumber) === 0) // matches truncated card number
+			return true;
+		else
+			return parent::validate();
+    }
+
     public function authorize(Varien_Object $payment, $amount) {
 		if($this->getConfigData('logging'))
 			Mage::log("[MeS Gateway Module] ".$this->getConfigData('payment_action')." attempt");
@@ -51,12 +66,11 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		$order = $payment->getOrder();
 		$orderid = $order->getIncrementId();
 		$billing = $order->getBillingAddress();
-		$shipping = $order->getShippingAddress(); ## May not be set
+		$shipping = $order->getShippingAddress(); ## May not be set when digital goods are sold
 		
 		$requestValues = array(
 			"profile_id"				=> $this->getConfigData('profile_id'),
 			"profile_key"				=> $this->getConfigData('profile_key'),
-			"card_number" 				=> preg_replace("/[^0-9]/", "", $payment->getCcNumber()),
 			"card_exp_date" 			=> str_pad($payment->getCcExpMonth(), 2, "0", STR_PAD_LEFT) . substr($payment->getCcExpYear(), 2, 2),
 			"cvv2"						=> preg_replace("/[^0-9]/", "", $payment->getCcCid()),
 			"transaction_amount" 		=> number_format($amount, 2, '.', ''),
@@ -77,6 +91,15 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 			"country_code"				=> $billing['country_id'],
 		);
 		
+		if($this->getConfigData('use_tokenization')) {
+			if(isset($_POST['payment']['cc_token']) && $_POST['payment']['cc_token'] != "")
+				$requestValues['card_id'] = $_POST['payment']['cc_token'];
+			else
+				Mage::throwException('No token was generated.');
+		}
+		else
+			$requestValues['card_number'] = preg_replace("/[^0-9]/", "", $payment->getCcNumber());
+		
 		## Cannot depend on device fingerprint to always be available
 		if(isset($_POST['payment']['cc_fingerprint']) && $_POST['payment']['cc_fingerprint'] != "")
 			$requestValues['device_id'] = $_POST['payment']['cc_fingerprint'];
@@ -96,7 +119,6 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		$payment->setIsTransactionClosed(0);
         return $this;
     }
-	
 	
     public function capture(Varien_Object $payment, $amount) {
         if($payment->getParentTransactionId()) {
@@ -126,7 +148,6 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		else
 			Mage::throwException('Unable to perform action: Invalid State');
     }
-	
 	
     public function refund(Varien_Object $payment, $amount) {
 		if($this->getConfigData('logging'))
@@ -160,13 +181,11 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		$payment->setStatus(self::STATUS_APPROVED);
 		return $this;
     }
-
-
+	
     public function void(Varien_Object $payment) {
 		## Void/Auth Reversal or credit(if settled).
 		return $this->refund($payment, null);
     }
-	
 	
 	protected function execute($requestValues) {
 		if($this->getConfigData('logging'))
@@ -265,7 +284,6 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		}
 	}
 	
-	
 	private function getClientReferenceNumber($order, $orderid, $crn) {
 		
 		$billing = $order->getBillingAddress();
@@ -287,11 +305,9 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		}
 	}
 	
-	
 	private function convertTransactionType($str) {
 		return $str == "authorize" ? "P" : "D";
 	}
-	
 	
 	private function secureEligible($str) {
 		## Visa and MC only for 3D Secure
@@ -300,5 +316,4 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		else
 			return false;
 	}
-	
 }

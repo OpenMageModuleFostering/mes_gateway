@@ -91,6 +91,7 @@
 				  <bypassssl>0</bypassssl>
 				  <simulator>1</simulator>
 				  <use_proxy>0</use_proxy>
+				  <use_tokenization>0</use_tokenization>
             </gateway>
         </payment>
     </default>
