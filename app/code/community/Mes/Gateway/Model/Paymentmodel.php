@@ -39,6 +39,7 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
     protected $_canVoid                 = true;
     protected $_canUseInternal          = true; ## Creation of a transaction from the admin panel
     protected $_canUseCheckout          = true;
+	protected $_canSaveCc				= false;
 	protected $_formBlockType 			= 'gateway/form';
 	
 	public function __construct() {
@@ -116,7 +117,18 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 		$response = $this->execute($requestValues);
 		$payment->setStatus(self::STATUS_APPROVED);
 	    $payment->setTransactionId($response['transaction_id']);
+        $payment->setCcTransId($response['transaction_id']);
+        $payment->setCcAvsStatus($response['avs_result']);
+		 
 		$payment->setIsTransactionClosed(0);
+		
+		$textResult =  '<strong>Authorization Results</strong><br />'.
+				'<strong>Approval Code:</strong> '.$response['auth_code'].'<br />'.
+				'<strong>AVS Result:</strong> '.$response['avs_result'].' - '.$this->convertAvsResult($response['avs_result']).'<br />'.
+				'<strong>CVV Result:</strong> '.$response['cvv2_result'].' - '.$this->convertCvvResult($response['cvv2_result']);
+		$order->addStatusHistoryComment($textResult, true);
+        $order->save();
+		
         return $this;
     }
 	
@@ -141,7 +153,7 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 			$payment->setTransactionId($response['transaction_id']);
 			$payment->setIsTransactionPending(false);
 			
-			return $this;	
+			return $this;
 		}
 		else if($this->getConfigData('payment_action') == self::ACTION_AUTHORIZE_CAPTURE)
 			return $this->authorize($payment, $amount);
@@ -302,6 +314,32 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 			$crn = str_replace("[company]", $billing->getCompany(), $crn);
 			$crn = str_replace("[customerid]", $billing->getCustomerId(), $crn);
 			return $crn;
+		}
+	}
+	
+	private function convertAvsResult($resultCode) {
+		switch($resultCode) {
+			case 'G': return 'Non-U.S. issuing bank does not support AVS.';
+			case 'M': return 'Street address and postal code match.';
+			case 'N': return 'Street address and postal code do not match.';
+			case 'R': return 'System unavailable.';
+			case 'S': return 'Bank does not support AVS.';
+			case 'A': return 'Street address matches, but 5-digit and 9-digit postal code do not match.';
+			case 'X': return 'Street address and 9-digit postal code match.';
+			case 'Y': return 'Street address and 5-digit postal code match.';
+			case 'Z': return 'Street address does not match, but 5-digit postal code matches.';
+			default: return '';
+		}
+	}
+	
+	private function convertCvvResult($resultCode) {
+		switch($resultCode) {
+			case 'M': return 'CVV Match.';
+			case 'N': return 'No CVV Match.';
+			case 'P': return 'Not Processed.';
+			case 'U': return 'System unavailable.';
+			case 'S': return 'Bank does not support verification.';
+			default: return '';
 		}
 	}
 	

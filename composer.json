@@ -1,12 +1,12 @@
 {
     "name": "OpenMageModuleFostering/Mes_Gateway",
     "type": "magento-module",
-    "license": "BSD",
+    "license": "Apache-Software-License",
     "homepage": "",
-    "description": "This plug-in will allow credit card acceptance through the Merchant e-Solutions Payment Gateway.",
+    "description": "The Official Free Processing plug-in for the MeS Payment Gateway.",
     "authors": [
     {
-        "name": "Merchant e-Solutions",
+        "name": "mesolutions",
         "email": "mes_certification@merchante-solutions.com"
     }
 ],
