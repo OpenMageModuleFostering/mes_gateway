@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Mes_Gateway",
+    "type": "magento-module",
+    "license": "BSD",
+    "homepage": "",
+    "description": "This plug-in will allow credit card acceptance through the Merchant e-Solutions Payment Gateway.",
+    "authors": [
+    {
+        "name": "Merchant e-Solutions",
+        "email": "mes_certification@merchante-solutions.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
