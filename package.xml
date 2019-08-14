@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <package>
     <name>Mes_Gateway</name>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <stability>stable</stability>
     <license uri="http://opensource.org/licenses/apachepl.php">Apache Software License</license>
     <channel>community</channel>
     <extends/>
     <summary>The Official Free Processing plug-in for the MeS Payment Gateway.</summary>
     <description>This plug-in will allow credit card acceptance through the Merchant e-Solutions Payment Gateway.</description>
-    <notes>Additional logging in the order history for Authorization code, AVS and CVV2 results.</notes>
+    <notes>Fixed creation of orders in the admin backend</notes>
     <authors><author><name>mesolutions</name><user>mesolutions</user><email>mes_certification@merchante-solutions.com</email></author></authors>
-    <date>2013-04-24</date>
-    <time>16:25:48</time>
-    <contents><target name="magecommunity"><dir name="Mes"><dir name="Gateway"><dir name="Block"><file name="Form.php" hash="03e1cab2da92ca33015ec1f273f0b347"/></dir><dir name="Helper"><file name="Data.php" hash="1a95e5fc5e9fdbd269d9252c1cc943f9"/></dir><dir name="Model"><file name="Paymentmodel.php" hash="1452674749cd6fda3586c09b30fce4be"/><file name="Session.php" hash="f6ce82220c951243ab7c65f6394c9027"/><dir name="Source"><file name="Cardtypes.php" hash="c86be0ea657658fc49fbda3639a663f0"/><file name="Currencies.php" hash="cde6d43fdd21b96c570fc082c2acaadb"/><file name="Transactiontype.php" hash="de93477fe1e51031399ece2a7fcf45ea"/></dir></dir><dir name="etc"><file name="config.xml" hash="a95891af9d6d7e4e5eadf62aea1e7858"/><file name="system.xml" hash="4e1a96a603b3ce3420bbf8e03b5b9283"/></dir></dir></dir></target><target name="mage"><dir name="app"><dir name="etc"><dir name="modules"><file name="Mes_Gateway.xml" hash="3c66636dd94beda5bfb984565b52aca1"/></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="mes"><file name="cc.phtml" hash="b60628a7afd7dcb4d8f7f9416778732c"/></dir></dir></dir></dir></dir></target></contents>
+    <date>2013-11-01</date>
+    <time>21:10:26</time>
+    <contents><target name="magecommunity"><dir name="Mes"><dir name="Gateway"><dir name="Block"><file name="Form.php" hash="03e1cab2da92ca33015ec1f273f0b347"/></dir><dir name="Helper"><file name="Data.php" hash="1a95e5fc5e9fdbd269d9252c1cc943f9"/></dir><dir name="Model"><file name="Paymentmodel.php" hash="1452674749cd6fda3586c09b30fce4be"/><file name="Session.php" hash="f6ce82220c951243ab7c65f6394c9027"/><dir name="Source"><file name="Cardtypes.php" hash="c86be0ea657658fc49fbda3639a663f0"/><file name="Currencies.php" hash="cde6d43fdd21b96c570fc082c2acaadb"/><file name="Transactiontype.php" hash="de93477fe1e51031399ece2a7fcf45ea"/></dir></dir><dir name="etc"><file name="config.xml" hash="a95891af9d6d7e4e5eadf62aea1e7858"/><file name="system.xml" hash="4e1a96a603b3ce3420bbf8e03b5b9283"/></dir></dir></dir></target><target name="mage"><dir name="app"><dir name="etc"><dir name="modules"><file name="Mes_Gateway.xml" hash="3c66636dd94beda5bfb984565b52aca1"/></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="mes"><file name="cc.phtml" hash="ecf97a98e0be84210c7fb922740bd031"/></dir></dir></dir></dir></dir><dir name="adminhtml"><dir name="default"><dir name="default"><dir name="template"><dir name="mes"><file name="cc.phtml" hash="1f6cb5eb01602aad78b06f6d2e616fae"/></dir></dir></dir></dir></dir></target></contents>
     <compatible/>
     <dependencies><required><php><min>5.2.0</min><max>6.0.0</max></php></required></dependencies>
 </package>
