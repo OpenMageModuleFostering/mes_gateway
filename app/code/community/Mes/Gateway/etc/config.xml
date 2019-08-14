@@ -37,6 +37,16 @@
         </mes_gateway>
     </modules>
 	
+    <adminhtml>
+        <layout>
+            <updates>
+                <gateway>
+                    <file>mes.xml</file>
+                </gateway>
+            </updates>
+        </layout>
+    </adminhtml>
+	
     <frontend>
         <routers>
             <gateway>
@@ -47,6 +57,13 @@
                 </args>
             </gateway>
         </routers>
+        <layout>
+            <updates>
+                <gateway>
+                    <file>mes.xml</file>
+                </gateway>
+            </updates>
+        </layout>
     </frontend>
 	
     <global>
