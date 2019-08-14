@@ -39,47 +39,61 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
     protected $_canVoid                 = true;
     protected $_canUseInternal          = true; ## Creation of a transaction from the admin panel
     protected $_canUseCheckout          = true;
-	//protected $_formBlockType 			= 'gateway/form';
+	protected $_formBlockType 			= 'gateway/form';
 	
 	public function __construct() {
 	}
-	
-	
+
     public function authorize(Varien_Object $payment, $amount) {
-		//$session = Mage::getSingleton('gateway/session');
-		
 		if($this->getConfigData('logging'))
 			Mage::log("[MeS Gateway Module] ".$this->getConfigData('payment_action')." attempt");
 		
 		$order = $payment->getOrder();
-		$billing = $order->getShippingAddress();
 		$orderid = $order->getIncrementId();
-		list($avsstreet) = $order->getBillingAddress()->getStreet();
-		$shipping = $order->getShippingAddress();
+		$billing = $order->getBillingAddress();
+		$shipping = $order->getShippingAddress(); ## May not be set
 		
-		$requestValues = array(	"profile_id"				=> $this->getConfigData('profile_id'),
-								"profile_key"				=> $this->getConfigData('profile_key'),
-								"card_number" 				=> $payment->getCcNumber(),
-								"card_exp_date" 			=> str_pad($payment->getCcExpMonth(), 2, "0", STR_PAD_LEFT) . substr($payment->getCcExpYear(), 2, 2),
-								"cvv2"						=> $payment->getCcCid(),
-								"transaction_amount" 		=> number_format($amount, 2, '.', ''),
-								"cardholder_street_address"	=> urlencode($avsstreet),
-								"cardholder_zip"			=> $order->getBillingAddress()->getPostcode(),
-								"ship_to_zip"				=> $shipping->getPostcode(),
-								"transaction_type"			=> $this->convertTransactionType($this->getConfigData('payment_action')),
-								"client_reference_number"	=> urlencode($this->getClientReferenceNumber($order, $orderid, $this->getConfigData('client_reference_number'))),
-								"tax_amount" 				=> number_format($order->getTaxAmount(), 2, '.', ''),
-								"currency_code" 			=> $order->getBaseCurrencyCode(),
-								"invoice_number"			=> $orderid
-							  );
+		$requestValues = array(
+			"profile_id"				=> $this->getConfigData('profile_id'),
+			"profile_key"				=> $this->getConfigData('profile_key'),
+			"card_number" 				=> preg_replace("/[^0-9]/", "", $payment->getCcNumber()),
+			"card_exp_date" 			=> str_pad($payment->getCcExpMonth(), 2, "0", STR_PAD_LEFT) . substr($payment->getCcExpYear(), 2, 2),
+			"cvv2"						=> preg_replace("/[^0-9]/", "", $payment->getCcCid()),
+			"transaction_amount" 		=> number_format($amount, 2, '.', ''),
+			"transaction_type"			=> $this->convertTransactionType($this->getConfigData('payment_action')),
+			"client_reference_number"	=> urlencode($this->getClientReferenceNumber($order, $orderid, $this->getConfigData('client_reference_number'))),
+			"tax_amount" 				=> number_format($order['tax_amount'], 2, '.', ''),
+			"invoice_number"			=> $orderid,
+			"currency_code" 			=> $order['order_currency_code'],
+			"account_email"				=> $order['customer_email'],
+			"ip_address"				=> $order['remote_ip'],
+			"digital_goods"				=> $order['is_virtual'] ? "true" : "false",
+			"cardholder_street_address"	=> $billing['street'],
+			"cardholder_zip"			=> $billing['postcode'],
+			"cardholder_first_name"		=> $billing['firstname'],
+			"cardholder_last_name"		=> $billing['lastname'],
+			"cardholder_email"			=> $billing['email'],
+			"cardholder_phone"			=> preg_replace("/[^0-9]/", "", $billing['telephone']),
+			"country_code"				=> $billing['country_id'],
+		);
 		
+		## Cannot depend on device fingerprint to always be available
+		if(isset($_POST['payment']['cc_fingerprint']) && $_POST['payment']['cc_fingerprint'] != "")
+			$requestValues['device_id'] = $_POST['payment']['cc_fingerprint'];
+		
+		## Digital download products have no shipping
+		if($shipping) {
+			$requestValues['ship_to_first_name'] 	= $shipping['firstname'];
+			$requestValues['ship_to_last_name'] 	= $shipping['lastname'];
+			$requestValues['ship_to_address']		= $shipping['street'];
+			$requestValues['ship_to_zip'] 			= $shipping['postcode'];
+			$requestValues['dest_country_code'] 	= $shipping['country_id'];
+		}
+
 		$response = $this->execute($requestValues);
-		
 		$payment->setStatus(self::STATUS_APPROVED);
 	    $payment->setTransactionId($response['transaction_id']);
-		
 		$payment->setIsTransactionClosed(0);
-		
         return $this;
     }
 	
@@ -254,7 +268,7 @@ class Mes_Gateway_Model_Paymentmodel extends Mage_Payment_Model_Method_Cc {
 	
 	private function getClientReferenceNumber($order, $orderid, $crn) {
 		
-		$billing = $order->getShippingAddress();
+		$billing = $order->getBillingAddress();
 		
 		## Default
 		if(empty($crn)) {

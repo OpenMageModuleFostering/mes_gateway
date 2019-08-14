@@ -2,10 +2,10 @@
 /**
  * Merchant e-Solutions Magento Plugin.
  * v1.1.0 - March 10th, 2011
- * 
+ *
  * Copyright (c) 2010 Merchant e-Solutions
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *    * Redistributions of source code must retain the above copyright
@@ -31,9 +31,14 @@
 
 class Mes_Gateway_Block_Form extends Mage_Payment_Block_Form_Cc
 {
-  protected function _construct()
-    {
-        parent::_construct();
-        $this->setTemplate('mes/cc.phtml');
-    }
+	protected function _construct()
+	{
+		parent::_construct();
+		$this->setTemplate('mes/cc.phtml');
+	}
+	
+	protected function _prepareLayout()
+	{
+		return parent::_prepareLayout();
+	}
 }
