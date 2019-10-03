@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Mes_Gateway",
+    "name": "OpenMageModuleFostering\/Mes_Gateway",
     "type": "magento-module",
     "license": "Apache-Software-License",
     "homepage": "",
     "description": "The Official Free Processing plug-in for the MeS Payment Gateway.",
     "authors": [
-    {
-        "name": "mesolutions",
-        "email": "mes_certification@merchante-solutions.com"
-    }
-],
+        {
+            "name": "mesolutions",
+            "email": "mes_certification@merchante-solutions.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
